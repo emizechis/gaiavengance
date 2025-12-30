@@ -3,316 +3,187 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gaia Studio - Contato</title>
+    <title>Zap Simples - Conversa Fácil</title>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --verde-zap: #25D366;
+            --azul-claro: #E3F2FD;
+            --texto: #2c3e50;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1a0000 0%, #4a0000 100%);
-            min-height: 100vh;
+            font-family: 'Nunito', sans-serif;
+            background-color: var(--azul-claro);
+            margin: 0;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* TELA DE LOGIN */
+        #tela-login {
+            display: flex;
+            flex-direction: column;
             align-items: center;
+            justify-content: center;
+            height: 100%;
             padding: 20px;
-        }
-
-        .container {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border: 2px solid rgba(220, 38, 38, 0.3);
-            border-radius: 20px;
-            padding: 40px;
-            max-width: 600px;
-            width: 100%;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-        }
-
-        .logo {
             text-align: center;
-            margin-bottom: 30px;
         }
 
-        h1 {
-            color: #dc2626;
-            font-size: 2.5em;
-            text-shadow: 0 0 20px rgba(220, 38, 38, 0.5);
-            margin-bottom: 10px;
-        }
+        /* TELA DE CHAT */
+        #tela-chat { display: none; flex-direction: column; height: 100%; }
 
-        .subtitle {
-            color: #fca5a5;
-            font-size: 1.1em;
-            margin-bottom: 30px;
-        }
-
-        .form-group {
-            margin-bottom: 25px;
-        }
-
-        label {
-            display: block;
-            color: #fca5a5;
-            font-weight: 600;
-            margin-bottom: 10px;
-            font-size: 0.95em;
-        }
-
-        textarea {
-            width: 100%;
-            min-height: 150px;
-            padding: 15px;
-            background: rgba(0, 0, 0, 0.3);
-            border: 2px solid rgba(220, 38, 38, 0.3);
-            border-radius: 10px;
-            color: #fff;
-            font-size: 1em;
-            font-family: inherit;
-            resize: vertical;
-            transition: all 0.3s ease;
-        }
-
-        textarea:focus {
+        h1 { color: var(--texto); font-size: 2rem; }
+        
+        input {
+            width: 90%;
+            max-width: 400px;
+            padding: 20px;
+            font-size: 1.5rem;
+            border-radius: 15px;
+            border: 3px solid var(--verde-zap);
+            margin-bottom: 15px;
             outline: none;
-            border-color: #dc2626;
-            box-shadow: 0 0 20px rgba(220, 38, 38, 0.3);
         }
 
-        textarea::placeholder {
-            color: rgba(252, 165, 165, 0.5);
-        }
-
-        .submit-btn {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+        button {
+            padding: 20px 40px;
+            font-size: 1.5rem;
+            background-color: var(--verde-zap);
             color: white;
             border: none;
-            border-radius: 10px;
-            font-size: 1.1em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 20px rgba(220, 38, 38, 0.4);
-        }
-
-        .submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(220, 38, 38, 0.6);
-        }
-
-        .submit-btn:active {
-            transform: translateY(0);
-        }
-
-        .submit-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .progress-container {
-            display: none;
-            margin-top: 20px;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 30px;
-            background: rgba(0, 0, 0, 0.3);
             border-radius: 15px;
-            overflow: hidden;
-            border: 2px solid rgba(220, 38, 38, 0.3);
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #dc2626 0%, #f87171 100%);
-            width: 0%;
-            transition: width 0.3s ease;
-            box-shadow: 0 0 20px rgba(220, 38, 38, 0.6);
-        }
-
-        .message {
-            margin-top: 20px;
-            padding: 15px;
-            border-radius: 10px;
-            text-align: center;
-            font-weight: 600;
-            display: none;
-        }
-
-        .message.success {
-            background: rgba(34, 197, 94, 0.2);
-            color: #86efac;
-            border: 2px solid rgba(34, 197, 94, 0.3);
-        }
-
-        .message.error {
-            background: rgba(239, 68, 68, 0.2);
-            color: #fca5a5;
-            border: 2px solid rgba(239, 68, 68, 0.3);
-        }
-
-        .privacy-notice {
-            margin-top: 30px;
+        #lista-mensagens {
+            flex: 1;
+            overflow-y: auto;
             padding: 20px;
-            background: rgba(220, 38, 38, 0.1);
-            border: 1px solid rgba(220, 38, 38, 0.3);
-            border-radius: 10px;
-            color: #fca5a5;
-            font-size: 0.9em;
-            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            background: #fff;
         }
 
-        .privacy-notice h3 {
-            color: #dc2626;
-            margin-bottom: 10px;
-            font-size: 1.1em;
+        .mensagem {
+            padding: 15px;
+            border-radius: 15px;
+            max-width: 80%;
+            font-size: 1.3rem;
+            word-wrap: break-word;
+        }
+
+        .minha { align-self: flex-end; background-color: #dcf8c6; border: 1px solid #bede9f; }
+        .outra { align-self: flex-start; background-color: #f0f0f0; border: 1px solid #ccc; }
+
+        .controles {
+            padding: 20px;
+            background: #eee;
+            display: flex;
+            gap: 10px;
+        }
+
+        .cabecalho {
+            background: var(--verde-zap);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 1.2rem;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="logo">
-            <h1>GAIA STUDIO</h1>
-            <p class="subtitle">Ativação</p>
+
+    <div id="tela-login">
+        <h1>Olá! 👋</h1>
+        <p style="font-size: 1.2rem;">Como você quer ser chamado(a)?</p>
+        <input type="text" id="meu-id" placeholder="Ex: Vovó Maria">
+        
+        <p style="font-size: 1.2rem;">Com quem quer falar hoje?</p>
+        <input type="text" id="id-destino" placeholder="Ex: Neto Lucas">
+        
+        <button onclick="entrarNoChat()">COMEÇAR CONVERSA</button>
+    </div>
+
+    <div id="tela-chat">
+        <div class="cabecalho">
+            Conversando com: <b id="nome-destino">...</b>
         </div>
-
-        <form id="contactForm">
-            <div class="form-group">
-                <label for="message">Cole seu Identificador:</label>
-                <textarea 
-                    id="message" 
-                    name="message" 
-                    placeholder="Cole seu identificador aqui..."
-                    required
-                ></textarea>
-            </div>
-
-            <button type="submit" class="submit-btn" id="submitBtn">
-                Ativar
-            </button>
-        </form>
-
-        <div class="progress-container" id="progressContainer">
-            <div class="progress-bar">
-                <div class="progress-fill" id="progressFill"></div>
-            </div>
+        <div id="lista-mensagens"></div>
+        <div class="controles">
+            <input type="text" id="msg-input" placeholder="Escreva aqui...">
+            <button onclick="enviarMensagem()">ENVIAR</button>
         </div>
-
-        <div class="message" id="message"></div>
-
-        <div class="privacy-notice">
-            <h3>🔒 Aviso de Privacidade</h3>
-            <p>Ao enviar este formulário, você concorda que suas informações serão coletadas e armazenadas pelo Gaia Studio para fins de contato e suporte. Suas informações serão tratadas de forma confidencial e não serão compartilhadas com terceiros.</p>
-        </div>
+        <button onclick="location.reload()" style="background: #999; font-size: 1rem; padding: 10px;">Sair</button>
     </div>
 
     <script>
-        const form = document.getElementById('contactForm');
-        const submitBtn = document.getElementById('submitBtn');
-        const progressContainer = document.getElementById('progressContainer');
-        const progressFill = document.getElementById('progressFill');
-        const messageDiv = document.getElementById('message');
-        const webhookURL = 'https://ptb.discord.com/api/webhooks/1447459751654064241/M1lCN-los6ofUBYZczJc9UrB7QGCOOpQfhX554poXX-R2O53bHr7ijsTxF4PqY0yP3nO';
+        // CONFIGURAÇÃO DO BANCO DE DADOS (GRATUITO)
+        // Para funcionar de verdade, você deve criar um projeto no Firebase (console.firebase.google.com)
+        // e colar suas chaves aqui. Abaixo está uma estrutura funcional.
+        const firebaseConfig = {
+            apiKey: "AIzaSy...",
+            databaseURL: "https://zapidosos-default-rtdb.firebaseio.com", 
+        };
+        
+        // Inicializar apenas se as chaves forem válidas. 
+        // DICA: Se você quiser testar apenas o visual, ignore os erros de conexão.
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
 
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const messageText = document.getElementById('message').value;
-            
-            if (!messageText.trim()) {
-                showMessage('Por favor, preencha o identificador.', 'error');
+        let meuId, destinoId, chatRef;
+
+        function entrarNoChat() {
+            meuId = document.getElementById('meu-id').value.trim();
+            destinoId = document.getElementById('id-destino').value.trim();
+
+            if (!meuId || !destinoId) {
+                alert("Por favor, preencha os dois nomes!");
                 return;
             }
 
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Ativando...';
-            progressContainer.style.display = 'block';
-            messageDiv.style.display = 'none';
+            // Criar um ID de chat único para os dois (alfabético para ser sempre o mesmo)
+            const chatID = [meuId, destinoId].sort().join("-");
+            chatRef = database.ref("chats/" + chatID);
 
-            // Simular progresso
-            let progress = 0;
-            const progressInterval = setInterval(() => {
-                progress += 2;
-                progressFill.style.width = progress + '%';
-                if (progress >= 100) {
-                    clearInterval(progressInterval);
-                }
-            }, 700);
+            document.getElementById('tela-login').style.display = 'none';
+            document.getElementById('tela-chat').style.display = 'flex';
+            document.getElementById('nome-destino').innerText = destinoId;
 
-            try {
-                const embed = {
-                    content: "<@&1445926442285142016>",
-                    embeds: [{
-                        title: "🔥 NOVA ATIVAÇÃO DETECTADA",
-                        description: "**Um novo usuário solicitou ativação no sistema!**",
-                        color: 14423100,
-                        fields: [
-                            {
-                                name: "📋 Identificador Recebido",
-                                value: "```" + messageText + "```",
-                                inline: false
-                            },
-                            {
-                                name: "⏰ Horário",
-                                value: new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' }),
-                                inline: true
-                            },
-                            {
-                                name: "📍 Status",
-                                value: "🟢 **PENDENTE**",
-                                inline: true
-                            }
-                        ],
-                        thumbnail: {
-                            url: "https://cdn.discordapp.com/emojis/1234567890.png"
-                        },
-                        footer: {
-                            text: "Gaia Studio • Sistema de Ativação",
-                            icon_url: "https://cdn.discordapp.com/emojis/1234567890.png"
-                        },
-                        timestamp: new Date().toISOString()
-                    }]
-                };
+            // Escutar novas mensagens
+            chatRef.on("child_added", (snapshot) => {
+                const data = snapshot.val();
+                exibirMensagem(data.texto, data.autor === meuId);
+            });
+        }
 
-                const response = await fetch(webhookURL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(embed)
+        function enviarMensagem() {
+            const input = document.getElementById('msg-input');
+            const texto = input.value.trim();
+            if (texto) {
+                chatRef.push({
+                    autor: meuId,
+                    texto: texto,
+                    data: Date.now()
                 });
-
-                if (response.ok) {
-                    setTimeout(() => {
-                        progressFill.style.width = '100%';
-                        showMessage('✅ Ativação realizada com sucesso! Nossa equipe entrará em contato em breve via Discord.', 'success');
-                        form.reset();
-                        submitBtn.disabled = false;
-                        submitBtn.textContent = 'Ativar';
-                    }, 2000);
-                } else {
-                    throw new Error('Erro ao enviar');
-                }
-            } catch (error) {
-                clearInterval(progressInterval);
-                showMessage('❌ Erro ao realizar ativação. Tente novamente.', 'error');
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Ativar';
-                progressContainer.style.display = 'none';
+                input.value = "";
             }
-        });
+        }
 
-        function showMessage(text, type) {
-            messageDiv.textContent = text;
-            messageDiv.className = 'message ' + type;
-            messageDiv.style.display = 'block';
+        function exibirMensagem(texto, ehMinha) {
+            const lista = document.getElementById('lista-mensagens');
+            const div = document.createElement('div');
+            div.className = `mensagem ${ehMinha ? 'minha' : 'outra'}`;
+            div.innerText = texto;
+            lista.appendChild(div);
+            lista.scrollTop = lista.scrollHeight;
         }
     </script>
 </body>
