@@ -3,188 +3,282 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zap Simples - Conversa Fácil</title>
+    <title>Zap Azul - Conectando Gerações</title>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
     <style>
         :root {
-            --verde-zap: #25D366;
-            --azul-claro: #E3F2FD;
+            --azul-primario: #4A90E2;
+            --roxo-primario: #8E44AD;
+            --gradiente: linear-gradient(135deg, #4A90E2, #8E44AD);
+            --fundo: #f4f7f9;
+            --branco: #ffffff;
             --texto: #2c3e50;
         }
 
         body {
             font-family: 'Nunito', sans-serif;
-            background-color: var(--azul-claro);
+            background-color: var(--fundo);
             margin: 0;
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             height: 100vh;
+            color: var(--texto);
         }
 
-        /* TELA DE LOGIN */
-        #tela-login {
+        /* Container Principal */
+        .app-container {
+            width: 100%;
+            max-width: 500px;
+            background: var(--branco);
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        /* Cabeçalho */
+        .header {
+            background: var(--gradiente);
+            color: white;
             padding: 20px;
             text-align: center;
+            position: relative;
         }
 
-        /* TELA DE CHAT */
-        #tela-chat { display: none; flex-direction: column; height: 100%; }
-
-        h1 { color: var(--texto); font-size: 2rem; }
-        
-        input {
-            width: 90%;
-            max-width: 400px;
-            padding: 20px;
-            font-size: 1.5rem;
-            border-radius: 15px;
-            border: 3px solid var(--verde-zap);
-            margin-bottom: 15px;
-            outline: none;
-        }
-
-        button {
-            padding: 20px 40px;
-            font-size: 1.5rem;
-            background-color: var(--verde-zap);
-            color: white;
-            border: none;
-            border-radius: 15px;
-            cursor: pointer;
-            font-weight: bold;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
-        #lista-mensagens {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
+        .perfil-info {
             display: flex;
-            flex-direction: column;
-            gap: 15px;
-            background: #fff;
+            align-items: center;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 10px;
         }
 
-        .mensagem {
+        /* Telas */
+        .tela { display: none; flex-direction: column; height: 100%; overflow: hidden; }
+        .tela.ativa { display: flex; }
+
+        /* Botões Grandes e Coloridos */
+        .btn {
             padding: 15px;
-            border-radius: 15px;
-            max-width: 80%;
-            font-size: 1.3rem;
-            word-wrap: break-word;
-        }
-
-        .minha { align-self: flex-end; background-color: #dcf8c6; border: 1px solid #bede9f; }
-        .outra { align-self: flex-start; background-color: #f0f0f0; border: 1px solid #ccc; }
-
-        .controles {
-            padding: 20px;
-            background: #eee;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            font-weight: 800;
+            font-size: 1.1rem;
+            transition: 0.3s;
             display: flex;
+            align-items: center;
+            justify-content: center;
             gap: 10px;
         }
 
-        .cabecalho {
-            background: var(--verde-zap);
-            color: white;
+        .btn-roxo { background: var(--roxo-primario); color: white; }
+        .btn-azul { background: var(--azul-primario); color: white; }
+
+        /* Lista de Contatos */
+        .lista {
+            flex: 1;
+            overflow-y: auto;
             padding: 15px;
-            text-align: center;
+        }
+
+        .item-contato {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 10px;
+            border: 2px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .item-contato:hover { border-color: var(--azul-primario); }
+
+        /* Chat */
+        #mensagens {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            background: #f0f2f5;
+        }
+
+        .msg {
+            padding: 12px 18px;
+            border-radius: 18px;
+            margin-bottom: 8px;
+            max-width: 80%;
             font-size: 1.2rem;
         }
+        .msg.eu { align-self: flex-end; background: var(--azul-primario); color: white; }
+        .msg.outro { align-self: flex-start; background: white; border: 1px solid #ddd; }
+
+        /* Inputs */
+        input {
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #ddd;
+            font-size: 1rem;
+            margin: 5px 0;
+        }
+
+        .id-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+
     </style>
 </head>
 <body>
 
-    <div id="tela-login">
-        <h1>Olá! 👋</h1>
-        <p style="font-size: 1.2rem;">Como você quer ser chamado(a)?</p>
-        <input type="text" id="meu-id" placeholder="Ex: Vovó Maria">
+<div class="app-container">
+    
+    <div id="tela-contatos" class="tela ativa">
+        <div class="header">
+            <div class="perfil-info">
+                <span id="label-meu-nome">Meu Nome</span>
+                <div class="id-badge" onclick="copiarID()">ID: <span id="meu-id-display">...</span> <i class="fas fa-copy"></i></div>
+            </div>
+            <button class="btn btn-roxo" onclick="abrirModalPerfil()" style="font-size: 0.8rem; padding: 5px 10px;">Editar Perfil</button>
+        </div>
         
-        <p style="font-size: 1.2rem;">Com quem quer falar hoje?</p>
-        <input type="text" id="id-destino" placeholder="Ex: Neto Lucas">
-        
-        <button onclick="entrarNoChat()">COMEÇAR CONVERSA</button>
+        <div class="lista" id="lista-amigos">
+            <p style="text-align: center; color: #999;">Sua lista está vazia.<br>Adicione um amigo abaixo!</p>
+        </div>
+
+        <div style="padding: 15px; background: #fff; border-top: 1px solid #eee;">
+            <input type="text" id="novo-amigo-id" placeholder="Digite o ID do amigo" style="width: 94%;">
+            <input type="text" id="novo-amigo-nome" placeholder="Nome do amigo (Ex: Neto Lucas)" style="width: 94%;">
+            <button class="btn btn-azul" onclick="adicionarAmigo()" style="width: 100%; margin-top: 10px;">
+                <i class="fas fa-plus"></i> ADICIONAR AMIGO
+            </button>
+        </div>
     </div>
 
-    <div id="tela-chat">
-        <div class="cabecalho">
-            Conversando com: <b id="nome-destino">...</b>
+    <div id="tela-chat" class="tela">
+        <div class="header" style="display: flex; align-items: center; padding: 10px;">
+            <button onclick="voltar()" style="background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer;">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <h2 id="chat-com-nome" style="flex: 1; margin: 0;">Nome Amigo</h2>
         </div>
-        <div id="lista-mensagens"></div>
-        <div class="controles">
-            <input type="text" id="msg-input" placeholder="Escreva aqui...">
-            <button onclick="enviarMensagem()">ENVIAR</button>
+        <div id="mensagens" style="display: flex; flex-direction: column;"></div>
+        <div class="controles" style="padding: 15px; display: flex; gap: 10px; background: white;">
+            <input type="text" id="input-msg" placeholder="Escreva aqui..." style="flex: 1;">
+            <button class="btn btn-azul" onclick="enviar()">ENVIAR</button>
         </div>
-        <button onclick="location.reload()" style="background: #999; font-size: 1rem; padding: 10px;">Sair</button>
     </div>
 
-    <script>
-        // CONFIGURAÇÃO DO BANCO DE DADOS (GRATUITO)
-        // Para funcionar de verdade, você deve criar um projeto no Firebase (console.firebase.google.com)
-        // e colar suas chaves aqui. Abaixo está uma estrutura funcional.
-        const firebaseConfig = {
-            apiKey: "AIzaSy...",
-            databaseURL: "https://zapidosos-default-rtdb.firebaseio.com", 
-        };
+</div>
+
+<script>
+    // --- LÓGICA DE IDENTIDADE ---
+    let meuPerfil = JSON.parse(localStorage.getItem('perfil')) || {
+        id: 'user-' + Math.floor(Math.random() * 90000 + 10000),
+        nome: 'Novo Usuário'
+    };
+    localStorage.setItem('perfil', JSON.stringify(meuPerfil));
+
+    let amigos = JSON.parse(localStorage.getItem('amigos')) || [];
+
+    // --- FIREBASE CONFIG (Insira suas chaves aqui) ---
+    const firebaseConfig = { databaseURL: "https://zapidosos-default-rtdb.firebaseio.com" };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    function atualizarInterface() {
+        document.getElementById('meu-id-display').innerText = meuPerfil.id;
+        document.getElementById('label-meu-nome').innerText = meuPerfil.nome;
+        renderizarAmigos();
+    }
+
+    function abrirModalPerfil() {
+        const novoNome = prompt("Como você quer ser chamado?", meuPerfil.nome);
+        if (novoNome) {
+            meuPerfil.nome = novoNome;
+            localStorage.setItem('perfil', JSON.stringify(meuPerfil));
+            atualizarInterface();
+        }
+    }
+
+    function adicionarAmigo() {
+        const id = document.getElementById('novo-amigo-id').value.trim();
+        const nome = document.getElementById('novo-amigo-nome').value.trim();
+        if (id && nome) {
+            amigos.push({ id, nome });
+            localStorage.setItem('amigos', JSON.stringify(amigos));
+            document.getElementById('novo-amigo-id').value = '';
+            document.getElementById('novo-amigo-nome').value = '';
+            renderizarAmigos();
+        }
+    }
+
+    function renderizarAmigos() {
+        const lista = document.getElementById('lista-amigos');
+        if (amigos.length > 0) lista.innerHTML = '';
+        amigos.forEach((amigo, index) => {
+            lista.innerHTML += `
+                <div class="item-contato" onclick="abrirChat('${amigo.id}', '${amigo.nome}')">
+                    <span><b>${amigo.nome}</b><br><small style="color: #999">ID: ${amigo.id}</small></span>
+                    <i class="fas fa-comment-dots" style="color: var(--azul-primario); font-size: 1.5rem;"></i>
+                </div>
+            `;
+        });
+    }
+
+    // --- LÓGICA DE CHAT ---
+    let chatAtivo = null;
+    function abrirChat(idAmigo, nomeAmigo) {
+        chatAtivo = [meuPerfil.id, idAmigo].sort().join("_");
+        document.getElementById('chat-com-nome').innerText = nomeAmigo;
+        document.getElementById('tela-contatos').classList.remove('ativa');
+        document.getElementById('tela-chat').classList.add('ativa');
         
-        // Inicializar apenas se as chaves forem válidas. 
-        // DICA: Se você quiser testar apenas o visual, ignore os erros de conexão.
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
-
-        let meuId, destinoId, chatRef;
-
-        function entrarNoChat() {
-            meuId = document.getElementById('meu-id').value.trim();
-            destinoId = document.getElementById('id-destino').value.trim();
-
-            if (!meuId || !destinoId) {
-                alert("Por favor, preencha os dois nomes!");
-                return;
-            }
-
-            // Criar um ID de chat único para os dois (alfabético para ser sempre o mesmo)
-            const chatID = [meuId, destinoId].sort().join("-");
-            chatRef = database.ref("chats/" + chatID);
-
-            document.getElementById('tela-login').style.display = 'none';
-            document.getElementById('tela-chat').style.display = 'flex';
-            document.getElementById('nome-destino').innerText = destinoId;
-
-            // Escutar novas mensagens
-            chatRef.on("child_added", (snapshot) => {
-                const data = snapshot.val();
-                exibirMensagem(data.texto, data.autor === meuId);
-            });
-        }
-
-        function enviarMensagem() {
-            const input = document.getElementById('msg-input');
-            const texto = input.value.trim();
-            if (texto) {
-                chatRef.push({
-                    autor: meuId,
-                    texto: texto,
-                    data: Date.now()
-                });
-                input.value = "";
-            }
-        }
-
-        function exibirMensagem(texto, ehMinha) {
-            const lista = document.getElementById('lista-mensagens');
+        const ref = db.ref('mensagens/' + chatAtivo);
+        ref.off(); // Limpa escutas anteriores
+        document.getElementById('mensagens').innerHTML = '';
+        
+        ref.on('child_added', (snap) => {
+            const m = snap.val();
             const div = document.createElement('div');
-            div.className = `mensagem ${ehMinha ? 'minha' : 'outra'}`;
-            div.innerText = texto;
-            lista.appendChild(div);
-            lista.scrollTop = lista.scrollHeight;
+            div.className = `msg ${m.de === meuPerfil.id ? 'eu' : 'outro'}`;
+            div.innerText = m.texto;
+            document.getElementById('mensagens').appendChild(div);
+            document.getElementById('mensagens').scrollTop = document.getElementById('mensagens').scrollHeight;
+        });
+    }
+
+    function enviar() {
+        const txt = document.getElementById('input-msg').value;
+        if (txt && chatAtivo) {
+            db.ref('mensagens/' + chatAtivo).push({
+                de: meuPerfil.id,
+                texto: txt,
+                timestamp: Date.now()
+            });
+            document.getElementById('input-msg').value = '';
         }
-    </script>
+    }
+
+    function voltar() {
+        document.getElementById('tela-chat').classList.remove('ativa');
+        document.getElementById('tela-contatos').classList.add('ativa');
+    }
+
+    function copiarID() {
+        navigator.clipboard.writeText(meuPerfil.id);
+        alert("Seu ID foi copiado! Agora mande para seu amigo.");
+    }
+
+    window.onload = atualizarInterface;
+</script>
+
 </body>
 </html>
