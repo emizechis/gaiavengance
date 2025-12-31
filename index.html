@@ -9,94 +9,129 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --v-azul: #1A237E; --v-roxo: #6A1B9A; --fundo: #F0F2F5; }
-        * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        :root { --v-azul: #1A237E; --v-roxo: #6A1B9A; --fundo: #F0F2F5; --branco: #FFFFFF; }
+        * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { margin: 0; background: var(--fundo); height: 100vh; overflow: hidden; }
         .app { width: 100%; max-width: 500px; margin: auto; background: white; height: 100vh; display: flex; flex-direction: column; }
-        .topo { background: linear-gradient(135deg, var(--v-azul), var(--v-roxo)); color: white; padding: 20px; border-radius: 0 0 20px 20px; }
+        .topo { background: linear-gradient(135deg, var(--v-azul), var(--v-roxo)); color: white; padding: 25px 20px; border-radius: 0 0 25px 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         .tela { display: none; flex: 1; overflow-y: auto; padding: 15px; }
         .ativa { display: block; }
-        .nav { height: 70px; border-top: 1px solid #ddd; display: flex; justify-content: space-around; align-items: center; }
-        .nav-btn { cursor: pointer; color: #999; text-align: center; font-size: 0.7rem; }
+        .nav { height: 75px; border-top: 1px solid #eee; display: flex; justify-content: space-around; align-items: center; background: white; }
+        .nav-btn { cursor: pointer; color: #B2BEC3; text-align: center; font-size: 0.75rem; transition: 0.3s; flex: 1; }
         .nav-btn.on { color: var(--v-azul); font-weight: bold; }
-        .card { background: white; border: 1px solid #eee; padding: 15px; border-radius: 12px; margin-bottom: 10px; cursor: pointer; display: flex; align-items: center; }
-        .input-v { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin: 5px 0; }
-        .btn-v { width: 100%; padding: 15px; background: var(--v-azul); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        /* Chat Overlay */
+        .nav-btn i { font-size: 1.4rem; margin-bottom: 4px; }
+        .card { background: white; border: 1px solid #f1f1f1; padding: 15px; border-radius: 18px; margin-bottom: 12px; cursor: pointer; display: flex; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .avatar { width: 50px; height: 50px; border-radius: 15px; background: var(--v-roxo); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem; margin-right: 15px; }
+        .input-v { width: 100%; padding: 14px; border: 1.5px solid #eee; border-radius: 12px; margin: 8px 0; font-size: 1rem; outline: none; }
+        .input-v:focus { border-color: var(--v-azul); }
+        .btn-v { width: 100%; padding: 16px; background: var(--v-azul); color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 1rem; }
         #chat-view { position: fixed; inset: 0; background: #E5DDD5; z-index: 9999; display: none; flex-direction: column; }
         .msg-box { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; }
-        .bolha { padding: 10px 15px; border-radius: 12px; margin-bottom: 8px; max-width: 80%; font-size: 1rem; position: relative; }
-        .minha { align-self: flex-end; background: #DCF8C6; border-bottom-right-radius: 2px; }
-        .outra { align-self: flex-start; background: white; border-bottom-left-radius: 2px; }
-        .autor-n { font-size: 0.7rem; color: var(--v-roxo); font-weight: bold; display: block; }
+        .bolha { padding: 12px 16px; border-radius: 18px; margin-bottom: 8px; max-width: 80%; font-size: 1rem; line-height: 1.4; }
+        .minha { align-self: flex-end; background: #DCF8C6; border-bottom-right-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+        .outra { align-self: flex-start; background: white; border-bottom-left-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+        .autor-n { font-size: 0.7rem; color: var(--v-roxo); font-weight: bold; display: block; margin-bottom: 2px; }
     </style>
 </head>
 <body>
 
 <div class="app">
     <div class="topo">
-        <h1 style="margin:0; font-size:1.5rem;">Vapt</h1>
-        <small id="meu-id-txt">ID: ...</small>
+        <h1 style="margin:0; font-size:1.7rem; letter-spacing: -1px;">Vapt</h1>
+        <small id="meu-id-txt" style="opacity: 0.8;">Carregando ID...</small>
     </div>
 
     <div id="t-contatos" class="tela ativa">
+        <h3 style="margin-top:0">Conversas</h3>
         <div id="lista-amigos"></div>
-        <div style="background:#eee; padding:15px; border-radius:10px; margin-top:20px;">
-            <input id="in-id" class="input-v" placeholder="ID do Amigo">
-            <input id="in-nome" class="input-v" placeholder="Nome do Amigo">
-            <button class="btn-v" onclick="salvarAmigo()">+ Adicionar</button>
+        <div style="background:#fff; border: 2px dashed #ddd; padding:15px; border-radius:18px; margin-top:20px;">
+            <p style="font-weight:bold; margin-top:0;">Adicionar Contato</p>
+            <input id="in-id" class="input-v" placeholder="ID do Amigo (Ex: V1234)">
+            <input id="in-nome" class="input-v" placeholder="Apelido">
+            <button class="btn-v" onclick="salvarAmigo()">Salvar Amigo</button>
         </div>
     </div>
 
-    <div id="t-srv" class="tela">
-        <div id="lista-srv"></div>
-        <div style="background:#eee; padding:15px; border-radius:10px; margin-top:20px;">
-            <input id="in-srv-nome" class="input-v" placeholder="Nome do Servidor">
-            <button class="btn-v" onclick="novoServidor()" style="background:var(--v-roxo)">Criar Servidor</button>
+    <div id="t-perfil" class="tela">
+        <div style="text-align:center; padding: 20px 0;">
+            <div id="perfil-avatar" class="avatar" style="width:80px; height:80px; font-size:2rem; margin: 0 auto 15px auto;">U</div>
+            <h2 id="perfil-nome" style="margin:0">Nome do Usuário</h2>
+            <p id="perfil-id-display" style="color:#666; margin:5px 0">ID: ....</p>
+            <span id="badge-premium" style="display:none; background: gold; color: #856404; padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; font-weight: bold;">🌟 PREMIUM</span>
+        </div>
+        <hr style="border:0; border-top:1px solid #eee; margin:20px 0">
+        <label>Alterar meu Nome:</label>
+        <input id="new-name" class="input-v" placeholder="Digite seu novo nome">
+        <button class="btn-v" onclick="atualizarNome()" style="background:var(--v-roxo)">Atualizar Perfil</button>
+    </div>
+
+    <div id="t-premium" class="tela">
+        <div class="card" style="flex-direction:column; text-align:center; padding:30px;">
+            <i class="fas fa-crown" style="font-size:3rem; color:gold; margin-bottom:15px;"></i>
+            <h3>Vapt Premium</h3>
+            <p style="color:#666">Mensagens douradas, cores personalizadas e sem limites.</p>
+            <input id="key-in" class="input-v" placeholder="Cole sua chave aqui">
+            <button class="btn-v" onclick="ativarPremium()" style="background:#000">Resgatar Chave</button>
         </div>
     </div>
 
     <div id="t-admin" class="tela">
-        <h3 style="color:red">Painel Master V2131</h3>
-        <button class="btn-v" onclick="gerarKey()">Gerar Chave Premium</button>
-        <p id="res-key" style="text-align:center; font-weight:bold; color:var(--v-roxo)"></p>
+        <div style="background:#fff; border:2px solid red; padding:15px; border-radius:18px;">
+            <h3 style="color:red; margin-top:0;">Painel de Controle</h3>
+            <p>Gerar chave de acesso Premium:</p>
+            <button class="btn-v" onclick="gerarKey()" style="background:red">Gerar Nova Key</button>
+            <div id="res-key" style="margin-top:15px; font-size:1.5rem; text-align:center; font-weight:bold; letter-spacing:2px; color:var(--v-roxo)"></div>
+        </div>
     </div>
 
-    <div class="nav">
-        <div class="nav-btn on" onclick="irPara('t-contatos')"><i class="fa fa-user"></i><br>Amigos</div>
-        <div class="nav-btn" onclick="irPara('t-srv')"><i class="fa fa-server"></i><br>Servidores</div>
-        <div id="btn-adm" class="nav-btn" style="display:none" onclick="irPara('t-admin')"><i class="fa fa-lock"></i><br>Admin</div>
-    </div>
+    <nav class="nav">
+        <div class="nav-btn on" onclick="irPara('t-contatos')"><i class="fa fa-comments"></i><br>Chats</div>
+        <div class="nav-btn" onclick="irPara('t-perfil')"><i class="fa fa-user-circle"></i><br>Perfil</div>
+        <div class="nav-btn" onclick="irPara('t-premium')"><i class="fa fa-gem"></i><br>Premium</div>
+        <div id="btn-adm" class="nav-btn" style="display:none" onclick="irPara('t-admin')"><i class="fa fa-shield-alt"></i><br>Admin</div>
+    </nav>
 </div>
 
 <div id="chat-view">
-    <div style="background:white; padding:15px; display:flex; align-items:center; border-bottom:1px solid #ccc;">
-        <i class="fa fa-arrow-left" onclick="fecharChat()" style="margin-right:20px; cursor:pointer;"></i>
+    <div style="background:white; padding:15px; display:flex; align-items:center; border-bottom:1px solid #ccc; height:70px;">
+        <i class="fa fa-arrow-left" onclick="fecharChat()" style="margin-right:20px; cursor:pointer; font-size:1.2rem;"></i>
+        <div id="chat-avatar-mini" class="avatar" style="width:35px; height:35px; font-size:0.9rem; margin-right:10px;">?</div>
         <b id="chat-nome">Nome</b>
     </div>
     <div id="chat-msgs" class="msg-box"></div>
-    <div style="background:white; padding:15px; display:flex; gap:10px;">
-        <input id="msg-in" class="input-v" style="margin:0" placeholder="Mensagem...">
-        <button onclick="enviarMsg()" style="padding:10px 20px; background:var(--v-azul); color:white; border:none; border-radius:8px;">OK</button>
+    <div style="background:white; padding:15px; display:flex; gap:10px; border-top:1px solid #eee;">
+        <input id="msg-in" class="input-v" style="margin:0; border:none; background:#f5f5f5;" placeholder="Escreva aqui...">
+        <button onclick="enviarMsg()" style="width:50px; height:50px; background:var(--v-azul); color:white; border:none; border-radius:15px;"><i class="fa fa-paper-plane"></i></button>
     </div>
 </div>
 
 <script>
-    // --- SETUP PRINCIPAL ---
+    // --- SETUP ---
     const firebaseConfig = { databaseURL: "https://zapidosos-default-rtdb.firebaseio.com" };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-    const MEU_ID_MASTER = "V2131";
+    const MASTER_ID = "V2131";
 
     let user = JSON.parse(localStorage.getItem('vapt_u')) || {
-        id: 'V' + Math.floor(Math.random()*9000),
-        nome: 'Usuário',
-        adm: false
+        id: 'V' + Math.floor(1000 + Math.random()*9000),
+        nome: 'Novo Usuário',
+        premium: false
     };
-    if(user.id === MEU_ID_MASTER) user.adm = true;
-    localStorage.setItem('vapt_u', JSON.stringify(user));
-    document.getElementById('meu-id-txt').innerText = "Meu ID: " + user.id;
-    if(user.adm) document.getElementById('btn-adm').style.display = 'block';
+
+    // Auto-Admin para você
+    if(user.id === MASTER_ID) {
+        document.getElementById('btn-adm').style.display = 'block';
+    }
+
+    function salvarLocal() { localStorage.setItem('vapt_u', JSON.stringify(user)); }
+
+    function atualizarDadosTela() {
+        document.getElementById('meu-id-txt').innerText = "Meu ID: " + user.id;
+        document.getElementById('perfil-nome').innerText = user.nome;
+        document.getElementById('perfil-id-display').innerText = "ID: " + user.id;
+        document.getElementById('perfil-avatar').innerText = user.nome[0].toUpperCase();
+        if(user.premium) document.getElementById('badge-premium').style.display = 'inline-block';
+    }
 
     function irPara(id) {
         document.querySelectorAll('.tela').forEach(t => t.classList.remove('ativa'));
@@ -104,12 +139,23 @@
         document.getElementById(id).classList.add('ativa');
         event.currentTarget.classList.add('on');
         if(id === 't-contatos') listarAmigos();
-        if(id === 't-srv') listarServidores();
+        if(id === 't-perfil') atualizarDadosTela();
     }
 
-    // --- LOGICA DE CONTATOS ---
+    // --- PERFIL ---
+    function atualizarNome() {
+        const n = document.getElementById('new-name').value.trim();
+        if(n) {
+            user.nome = n;
+            salvarLocal();
+            atualizarDadosTela();
+            alert("Nome atualizado!");
+        }
+    }
+
+    // --- CONTATOS ---
     function salvarAmigo() {
-        const id = document.getElementById('in-id').value.trim();
+        const id = document.getElementById('in-id').value.trim().toUpperCase();
         const nome = document.getElementById('in-nome').value.trim();
         if(id && nome) {
             let amigos = JSON.parse(localStorage.getItem('vapt_a')) || [];
@@ -124,51 +170,38 @@
     function listarAmigos() {
         const lista = document.getElementById('lista-amigos');
         const amigos = JSON.parse(localStorage.getItem('vapt_a')) || [];
-        lista.innerHTML = amigos.length ? '' : '<p style="text-align:center">Nenhum amigo.</p>';
+        lista.innerHTML = amigos.length ? '' : '<p style="text-align:center; color:#999; padding:20px;">Você não tem contatos salvos.</p>';
         amigos.forEach(a => {
-            lista.innerHTML += `<div class="card" onclick="abrirChat('${a.id}','${a.nome}','pvt')">
-                <div style="width:40px;height:40px;background:#ddd;border-radius:50%;margin-right:10px"></div>
-                <b>${a.nome}</b></div>`;
+            lista.innerHTML += `
+                <div class="card" onclick="abrirChat('${a.id}','${a.nome}')">
+                    <div class="avatar" style="background:#00b894">${a.nome[0].toUpperCase()}</div>
+                    <div>
+                        <b style="font-size:1.1rem">${a.nome}</b><br>
+                        <small style="color:#636e72">${a.id}</small>
+                    </div>
+                </div>`;
         });
     }
 
-    // --- LOGICA DE SERVIDORES ---
-    function novoServidor() {
-        const nome = document.getElementById('in-srv-nome').value.trim();
-        if(nome) {
-            const sid = 'S' + Date.now();
-            db.ref('srvs/' + sid).set({ nome });
-            document.getElementById('in-srv-nome').value = '';
-        }
-    }
-
-    function listarServidores() {
-        db.ref('srvs').on('value', snap => {
-            const lista = document.getElementById('lista-srv');
-            lista.innerHTML = '';
-            snap.forEach(s => {
-                lista.innerHTML += `<div class="card" onclick="abrirChat('${s.key}','${s.val().nome}','srv')">
-                <div style="width:40px;height:40px;background:var(--v-roxo);border-radius:50%;margin-right:10px;color:white;text-align:center;line-height:40px">#</div>
-                <b>${s.val().nome}</b></div>`;
-            });
-        });
-    }
-
-    // --- O MOTOR DO CHAT (FIXO) ---
-    let canalAtual = "";
-    function abrirChat(id, nome, tipo) {
-        canalAtual = tipo === 'pvt' ? 'chat_' + [user.id, id].sort().join("_") : 'srv_' + id;
+    // --- CHAT MOTOR ---
+    let canal = "";
+    function abrirChat(id, nome) {
+        canal = "chat_" + [user.id, id].sort().join("_");
         document.getElementById('chat-nome').innerText = nome;
+        document.getElementById('chat-avatar-mini').innerText = nome[0].toUpperCase();
         document.getElementById('chat-view').style.display = 'flex';
         
-        const ref = db.ref('mensagens/' + canalAtual);
-        ref.off(); // Limpa escuta antiga
+        const ref = db.ref('mensagens/' + canal);
+        ref.off();
         document.getElementById('chat-msgs').innerHTML = '';
         
         ref.limitToLast(50).on('child_added', snap => {
             const m = snap.val();
             const div = document.createElement('div');
             div.className = `bolha ${m.uid === user.id ? 'minha' : 'outra'}`;
+            // Se for premium, a bolha ganha borda dourada
+            if(m.premium) div.style.border = "2px solid gold";
+            
             div.innerHTML = `<span class="autor-n">${m.nome}</span>${m.texto}`;
             document.getElementById('chat-msgs').appendChild(div);
             document.getElementById('chat-msgs').scrollTop = document.getElementById('chat-msgs').scrollHeight;
@@ -177,12 +210,13 @@
 
     function enviarMsg() {
         const t = document.getElementById('msg-in').value.trim();
-        if(t && canalAtual) {
-            db.ref('mensagens/' + canalAtual).push({
+        if(t && canal) {
+            db.ref('mensagens/' + canal).push({
                 uid: user.id,
                 nome: user.nome,
                 texto: t,
-                time: Date.now()
+                premium: user.premium || false,
+                timestamp: Date.now()
             });
             document.getElementById('msg-in').value = '';
         }
@@ -190,15 +224,33 @@
 
     function fecharChat() {
         document.getElementById('chat-view').style.display = 'none';
-        db.ref('mensagens/' + canalAtual).off();
+        if(canal) db.ref('mensagens/' + canal).off();
     }
 
+    // --- PREMIUM E ADMIN ---
     function gerarKey() {
-        const k = "PREM-" + Math.floor(Math.random()*9999);
+        const k = "VP-" + Math.floor(1000 + Math.random()*8999);
+        db.ref('validador/' + k).set({ativa: true});
         document.getElementById('res-key').innerText = k;
     }
 
-    window.onload = listarAmigos;
+    function ativarPremium() {
+        const k = document.getElementById('key-in').value.trim();
+        db.ref('validador/' + k).once('value', s => {
+            if(s.exists()){
+                user.premium = true;
+                salvarLocal();
+                db.ref('validador/' + k).remove();
+                alert("PARABÉNS! Premium Ativado.");
+                location.reload();
+            } else { alert("Chave inválida ou já usada."); }
+        });
+    }
+
+    window.onload = () => {
+        atualizarDadosTela();
+        listarAmigos();
+    };
 </script>
 </body>
 </html>
