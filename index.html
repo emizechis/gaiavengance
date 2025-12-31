@@ -6,265 +6,199 @@
     <title>Vapt - Oficial</title>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root {
-            --vapt-azul: #1A237E;
-            --vapt-roxo: #6A1B9A;
-            --cor-primaria: #1A237E;
-            --fundo: #F8F9FE;
-            --branco: #FFFFFF;
-            --texto: #2D3436;
-        }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--fundo); margin: 0; color: var(--texto); overflow: hidden; height: 100vh; }
-        .app-container { width: 100%; max-width: 500px; margin: auto; background: var(--branco); height: 100vh; display: flex; flex-direction: column; }
-        .header { background: linear-gradient(135deg, var(--cor-primaria), var(--vapt-roxo)); color: white; padding: 20px; border-radius: 0 0 20px 20px; }
-        .tela { display: none; padding: 20px; flex: 1; overflow-y: auto; }
-        .tela.ativa { display: block; }
-        .nav-bar { height: 75px; border-top: 1px solid #eee; display: flex; justify-content: space-around; align-items: center; background: white; padding-bottom: 10px; }
-        .nav-item { cursor: pointer; text-align: center; color: #B2BEC3; font-size: 0.7rem; font-weight: 600; flex: 1; }
-        .nav-item.active { color: var(--cor-primaria); }
-        .nav-item i { font-size: 1.4rem; margin-bottom: 3px; }
-        .card { background: #fff; border: 1px solid #F1F2F6; padding: 15px; border-radius: 15px; margin-bottom: 10px; display: flex; align-items: center; cursor: pointer; }
-        .avatar { width: 45px; height: 45px; border-radius: 12px; background: var(--vapt-roxo); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 15px; }
-        .vapt-input { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid #ddd; margin: 8px 0; font-size: 1rem; }
-        .vapt-btn { width: 100%; padding: 16px; border-radius: 12px; border: none; background: var(--cor-primaria); color: white; font-weight: 700; cursor: pointer; margin-top: 5px; }
-        #chat-overlay { position: fixed; inset: 0; background: var(--fundo); z-index: 2000; display: none; flex-direction: column; }
-        .area-msgs { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; }
-        .bolha { padding: 12px 16px; border-radius: 18px; margin-bottom: 10px; max-width: 85%; }
-        .bolha.minha { align-self: flex-end; background: var(--vapt-azul); color: white; border-bottom-right-radius: 4px; }
-        .bolha.outra { align-self: flex-start; background: #E9E9EB; border-bottom-left-radius: 4px; }
-        .premium-msg { border: 2px solid gold !important; font-weight: 600; }
+        :root { --v-azul: #1A237E; --v-roxo: #6A1B9A; --fundo: #F0F2F5; }
+        * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { margin: 0; background: var(--fundo); height: 100vh; overflow: hidden; }
+        .app { width: 100%; max-width: 500px; margin: auto; background: white; height: 100vh; display: flex; flex-direction: column; }
+        .topo { background: linear-gradient(135deg, var(--v-azul), var(--v-roxo)); color: white; padding: 20px; border-radius: 0 0 20px 20px; }
+        .tela { display: none; flex: 1; overflow-y: auto; padding: 15px; }
+        .ativa { display: block; }
+        .nav { height: 70px; border-top: 1px solid #ddd; display: flex; justify-content: space-around; align-items: center; }
+        .nav-btn { cursor: pointer; color: #999; text-align: center; font-size: 0.7rem; }
+        .nav-btn.on { color: var(--v-azul); font-weight: bold; }
+        .card { background: white; border: 1px solid #eee; padding: 15px; border-radius: 12px; margin-bottom: 10px; cursor: pointer; display: flex; align-items: center; }
+        .input-v { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin: 5px 0; }
+        .btn-v { width: 100%; padding: 15px; background: var(--v-azul); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        /* Chat Overlay */
+        #chat-view { position: fixed; inset: 0; background: #E5DDD5; z-index: 9999; display: none; flex-direction: column; }
+        .msg-box { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; }
+        .bolha { padding: 10px 15px; border-radius: 12px; margin-bottom: 8px; max-width: 80%; font-size: 1rem; position: relative; }
+        .minha { align-self: flex-end; background: #DCF8C6; border-bottom-right-radius: 2px; }
+        .outra { align-self: flex-start; background: white; border-bottom-left-radius: 2px; }
+        .autor-n { font-size: 0.7rem; color: var(--v-roxo); font-weight: bold; display: block; }
     </style>
 </head>
 <body>
 
-<div class="app-container">
-    <header class="header">
-        <h1>Vapt</h1>
-        <p id="sub-header" style="opacity: 0.8; font-size: 0.8rem;">Contatos</p>
-    </header>
+<div class="app">
+    <div class="topo">
+        <h1 style="margin:0; font-size:1.5rem;">Vapt</h1>
+        <small id="meu-id-txt">ID: ...</small>
+    </div>
 
-    <div id="tela-contatos" class="tela ativa">
+    <div id="t-contatos" class="tela ativa">
         <div id="lista-amigos"></div>
-        <div style="margin-top:20px; padding:15px; background:#f0f2f5; border-radius:15px;">
-            <p style="font-weight:bold; margin:0 0 10px 0;">+ Novo Amigo</p>
-            <input type="text" id="add-id" class="vapt-input" placeholder="ID do Amigo">
-            <input type="text" id="add-nome" class="vapt-input" placeholder="Nome do Amigo">
-            <button class="vapt-btn" onclick="adicionarAmigo()">Salvar Contato</button>
+        <div style="background:#eee; padding:15px; border-radius:10px; margin-top:20px;">
+            <input id="in-id" class="input-v" placeholder="ID do Amigo">
+            <input id="in-nome" class="input-v" placeholder="Nome do Amigo">
+            <button class="btn-v" onclick="salvarAmigo()">+ Adicionar</button>
         </div>
     </div>
 
-    <div id="tela-servidores" class="tela">
-        <div id="lista-servidores"></div>
-        <div style="margin-top:20px; padding:15px; background:#f0f2f5; border-radius:15px;">
-            <p style="font-weight:bold; margin:0 0 10px 0;">+ Novo Servidor</p>
-            <input type="text" id="srv-nome" class="vapt-input" placeholder="Nome do Servidor">
-            <button class="vapt-btn" onclick="criarServidorNoFirebase()" style="background:var(--vapt-roxo)">Criar Servidor</button>
+    <div id="t-srv" class="tela">
+        <div id="lista-srv"></div>
+        <div style="background:#eee; padding:15px; border-radius:10px; margin-top:20px;">
+            <input id="in-srv-nome" class="input-v" placeholder="Nome do Servidor">
+            <button class="btn-v" onclick="novoServidor()" style="background:var(--v-roxo)">Criar Servidor</button>
         </div>
     </div>
 
-    <div id="tela-premium" class="tela">
-        <div class="card" style="flex-direction:column; text-align:center;">
-            <h3 id="display-status">Plano Gratuito</h3>
-            <input type="text" id="key-input" class="vapt-input" placeholder="Chave de Ativação">
-            <button class="vapt-btn" onclick="resgatarChave()">Ativar Premium</button>
-        </div>
-        <div id="controles-premium" style="display:none; margin-top:20px;">
-            <label>Personalizar Cor do Site:</label>
-            <input type="color" class="vapt-input" onchange="mudarCorGlobal(this.value)" style="height:50px">
-        </div>
+    <div id="t-admin" class="tela">
+        <h3 style="color:red">Painel Master V2131</h3>
+        <button class="btn-v" onclick="gerarKey()">Gerar Chave Premium</button>
+        <p id="res-key" style="text-align:center; font-weight:bold; color:var(--v-roxo)"></p>
     </div>
 
-    <div id="tela-admin" class="tela">
-        <div style="background:#fff1f1; padding:15px; border-radius:15px; border:2px dashed #ff7675;">
-            <h3>👑 Painel Master (V2131)</h3>
-            <button class="vapt-btn" onclick="gerarKey()">Gerar Chave Permanente</button>
-            <div id="key-result" style="margin:10px 0; font-weight:800; color:red; text-align:center; font-size:1.2rem;"></div>
-            <h4>Gerenciar Premium</h4>
-            <div id="admin-lista-premium"></div>
-        </div>
+    <div class="nav">
+        <div class="nav-btn on" onclick="irPara('t-contatos')"><i class="fa fa-user"></i><br>Amigos</div>
+        <div class="nav-btn" onclick="irPara('t-srv')"><i class="fa fa-server"></i><br>Servidores</div>
+        <div id="btn-adm" class="nav-btn" style="display:none" onclick="irPara('t-admin')"><i class="fa fa-lock"></i><br>Admin</div>
     </div>
-
-    <nav class="nav-bar">
-        <div class="nav-item active" onclick="navegar('tela-contatos', 'Contatos')"><i class="fas fa-address-book"></i><br>Contatos</div>
-        <div class="nav-item" onclick="navegar('tela-servidores', 'Servidores')"><i class="fas fa-users"></i><br>Servidores</div>
-        <div class="nav-item" onclick="navegar('tela-premium', 'Premium')"><i class="fas fa-crown"></i><br>Premium</div>
-        <div id="nav-admin" class="nav-item" style="display:none;" onclick="navegar('tela-admin', 'Admin')"><i class="fas fa-user-shield"></i><br>Admin</div>
-    </nav>
 </div>
 
-<div id="chat-overlay">
-    <div style="padding:15px; background:white; display:flex; align-items:center; border-bottom:1px solid #eee;">
-        <i class="fas fa-arrow-left" onclick="fecharChat()" style="margin-right:15px; font-size:1.2rem; cursor:pointer;"></i>
-        <b id="chat-titulo">Conversa</b>
+<div id="chat-view">
+    <div style="background:white; padding:15px; display:flex; align-items:center; border-bottom:1px solid #ccc;">
+        <i class="fa fa-arrow-left" onclick="fecharChat()" style="margin-right:20px; cursor:pointer;"></i>
+        <b id="chat-nome">Nome</b>
     </div>
-    <div class="area-msgs" id="chat-box"></div>
-    <div style="padding:15px; background:white; display:flex; gap:10px;">
-        <input type="text" id="msg-input" class="vapt-input" style="margin:0;" placeholder="Sua mensagem...">
-        <button class="vapt-btn" onclick="enviarMensagemReal()" style="margin:0; width:65px;"><i class="fas fa-paper-plane"></i></button>
+    <div id="chat-msgs" class="msg-box"></div>
+    <div style="background:white; padding:15px; display:flex; gap:10px;">
+        <input id="msg-in" class="input-v" style="margin:0" placeholder="Mensagem...">
+        <button onclick="enviarMsg()" style="padding:10px 20px; background:var(--v-azul); color:white; border:none; border-radius:8px;">OK</button>
     </div>
 </div>
 
 <script>
-    // --- CONFIGURAÇÃO CRIADOR ---
+    // --- SETUP PRINCIPAL ---
     const firebaseConfig = { databaseURL: "https://zapidosos-default-rtdb.firebaseio.com" };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-    const MEU_ID = "V2131";
+    const MEU_ID_MASTER = "V2131";
 
-    let user = JSON.parse(localStorage.getItem('vapt_user')) || {
-        id: 'V' + Math.floor(Math.random()*9999),
-        nome: 'Usuário ' + Math.floor(Math.random()*100),
-        premium: false,
-        isAdmin: false
+    let user = JSON.parse(localStorage.getItem('vapt_u')) || {
+        id: 'V' + Math.floor(Math.random()*9000),
+        nome: 'Usuário',
+        adm: false
     };
+    if(user.id === MEU_ID_MASTER) user.adm = true;
+    localStorage.setItem('vapt_u', JSON.stringify(user));
+    document.getElementById('meu-id-txt').innerText = "Meu ID: " + user.id;
+    if(user.adm) document.getElementById('btn-adm').style.display = 'block';
 
-    if(user.id === MEU_ID) user.isAdmin = true;
-    localStorage.setItem('vapt_user', JSON.stringify(user));
-
-    // --- NAVEGAÇÃO ---
-    function navegar(id, titulo) {
+    function irPara(id) {
         document.querySelectorAll('.tela').forEach(t => t.classList.remove('ativa'));
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('on'));
         document.getElementById(id).classList.add('ativa');
-        document.getElementById('sub-header').innerText = titulo;
-        event.currentTarget.classList.add('active');
-        
-        if(id === 'tela-contatos') renderizarAmigos();
-        if(id === 'tela-servidores') carregarServidores();
-        if(id === 'tela-admin') carregarListaAdmin();
+        event.currentTarget.classList.add('on');
+        if(id === 't-contatos') listarAmigos();
+        if(id === 't-srv') listarServidores();
     }
 
-    // --- FUNÇÕES DE CONTATOS (CORRIGIDAS) ---
-    function adicionarAmigo() {
-        const id = document.getElementById('add-id').value.trim();
-        const nome = document.getElementById('add-nome').value.trim();
+    // --- LOGICA DE CONTATOS ---
+    function salvarAmigo() {
+        const id = document.getElementById('in-id').value.trim();
+        const nome = document.getElementById('in-nome').value.trim();
         if(id && nome) {
-            let amigos = JSON.parse(localStorage.getItem('vapt_amigos')) || [];
+            let amigos = JSON.parse(localStorage.getItem('vapt_a')) || [];
             amigos.push({id, nome});
-            localStorage.setItem('vapt_amigos', JSON.stringify(amigos));
-            document.getElementById('add-id').value = '';
-            document.getElementById('add-nome').value = '';
-            renderizarAmigos();
+            localStorage.setItem('vapt_a', JSON.stringify(amigos));
+            listarAmigos();
+            document.getElementById('in-id').value = '';
+            document.getElementById('in-nome').value = '';
         }
     }
 
-    function renderizarAmigos() {
+    function listarAmigos() {
         const lista = document.getElementById('lista-amigos');
-        const amigos = JSON.parse(localStorage.getItem('vapt_amigos')) || [];
-        lista.innerHTML = amigos.length ? '' : '<p style="text-align:center; color:#999; margin-top:20px;">Nenhum contato salvo.</p>';
+        const amigos = JSON.parse(localStorage.getItem('vapt_a')) || [];
+        lista.innerHTML = amigos.length ? '' : '<p style="text-align:center">Nenhum amigo.</p>';
         amigos.forEach(a => {
-            const card = document.createElement('div');
-            card.className = 'card';
-            card.onclick = () => abrirChat(a.id, a.nome, 'pvt');
-            card.innerHTML = `<div class="avatar">${a.nome[0].toUpperCase()}</div><div><b>${a.nome}</b><br><small>ID: ${a.id}</small></div>`;
-            lista.appendChild(card);
+            lista.innerHTML += `<div class="card" onclick="abrirChat('${a.id}','${a.nome}','pvt')">
+                <div style="width:40px;height:40px;background:#ddd;border-radius:50%;margin-right:10px"></div>
+                <b>${a.nome}</b></div>`;
         });
     }
 
-    // --- FUNÇÕES DE SERVIDORES ---
-    function criarServidorNoFirebase() {
-        const nome = document.getElementById('srv-nome').value.trim();
+    // --- LOGICA DE SERVIDORES ---
+    function novoServidor() {
+        const nome = document.getElementById('in-srv-nome').value.trim();
         if(nome) {
-            const sId = 'SRV-' + Math.floor(Math.random()*9999);
-            db.ref('servidores/' + sId).set({ nome: nome, dono: user.id });
-            document.getElementById('srv-nome').value = '';
-            carregarServidores();
+            const sid = 'S' + Date.now();
+            db.ref('srvs/' + sid).set({ nome });
+            document.getElementById('in-srv-nome').value = '';
         }
     }
 
-    function carregarServidores() {
-        db.ref('servidores').on('value', snap => {
-            const lista = document.getElementById('lista-servidores');
+    function listarServidores() {
+        db.ref('srvs').on('value', snap => {
+            const lista = document.getElementById('lista-srv');
             lista.innerHTML = '';
             snap.forEach(s => {
-                const srv = s.val();
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.onclick = () => abrirChat(s.key, srv.nome, 'srv');
-                card.innerHTML = `<div class="avatar" style="background:#333">#</div><b>${srv.nome}</b>`;
-                lista.appendChild(card);
+                lista.innerHTML += `<div class="card" onclick="abrirChat('${s.key}','${s.val().nome}','srv')">
+                <div style="width:40px;height:40px;background:var(--v-roxo);border-radius:50%;margin-right:10px;color:white;text-align:center;line-height:40px">#</div>
+                <b>${s.val().nome}</b></div>`;
             });
         });
     }
 
-    // --- SISTEMA DE CHAT ---
-    let chatPath = "";
+    // --- O MOTOR DO CHAT (FIXO) ---
+    let canalAtual = "";
     function abrirChat(id, nome, tipo) {
-        chatPath = tipo === 'pvt' ? 'msgs_pvt/' + [user.id, id].sort().join("_") : 'msgs_srv/' + id;
-        document.getElementById('chat-titulo').innerText = nome;
-        document.getElementById('chat-overlay').style.display = 'flex';
+        canalAtual = tipo === 'pvt' ? 'chat_' + [user.id, id].sort().join("_") : 'srv_' + id;
+        document.getElementById('chat-nome').innerText = nome;
+        document.getElementById('chat-view').style.display = 'flex';
         
-        const ref = db.ref(chatPath);
-        ref.off();
-        document.getElementById('chat-box').innerHTML = '';
-        ref.limitToLast(40).on('child_added', snap => {
+        const ref = db.ref('mensagens/' + canalAtual);
+        ref.off(); // Limpa escuta antiga
+        document.getElementById('chat-msgs').innerHTML = '';
+        
+        ref.limitToLast(50).on('child_added', snap => {
             const m = snap.val();
-            const d = document.createElement('div');
-            d.className = `bolha ${m.u === user.id ? 'minha' : 'outra'} ${m.p ? 'premium-msg' : ''}`;
-            d.innerHTML = `<small style="display:block; font-size:0.6rem; opacity:0.7;">${m.n}</small>${m.t}`;
-            document.getElementById('chat-box').appendChild(d);
-            document.getElementById('chat-box').scrollTop = 99999;
+            const div = document.createElement('div');
+            div.className = `bolha ${m.uid === user.id ? 'minha' : 'outra'}`;
+            div.innerHTML = `<span class="autor-n">${m.nome}</span>${m.texto}`;
+            document.getElementById('chat-msgs').appendChild(div);
+            document.getElementById('chat-msgs').scrollTop = document.getElementById('chat-msgs').scrollHeight;
         });
     }
 
-    function enviarMensagemReal() {
-        const t = document.getElementById('msg-input').value.trim();
-        if(t && chatPath) {
-            db.ref(chatPath).push({ u: user.id, n: user.nome, t: t, p: user.premium });
-            document.getElementById('msg-input').value = '';
-        }
-    }
-
-    function fecharChat() { document.getElementById('chat-overlay').style.display = 'none'; }
-
-    // --- ADMIN E PREMIUM ---
-    function gerarKey() {
-        const k = "VAPT-" + Math.floor(Math.random()*999999);
-        db.ref('keys/' + k).set({ status: 'live' });
-        document.getElementById('key-result').innerText = k;
-    }
-
-    function resgatarChave() {
-        const k = document.getElementById('key-input').value.trim();
-        db.ref('keys/' + k).once('value', s => {
-            if(s.exists()) {
-                db.ref('keys/' + k).remove();
-                user.premium = true;
-                db.ref('premium_users/' + user.id).set({ nome: user.nome });
-                localStorage.setItem('vapt_user', JSON.stringify(user));
-                location.reload();
-            } else { alert("Chave inválida!"); }
-        });
-    }
-
-    function carregarListaAdmin() {
-        db.ref('premium_users').on('value', snap => {
-            const l = document.getElementById('admin-lista-premium');
-            l.innerHTML = '';
-            snap.forEach(u => {
-                l.innerHTML += `<div style="padding:10px; border-bottom:1px solid #eee; display:flex; justify-content:space-between;">
-                    <span>${u.val().nome}</span>
-                    <button onclick="db.ref('premium_users/${u.key}').remove()" style="color:red; border:none; background:none;">X</button>
-                </div>`;
+    function enviarMsg() {
+        const t = document.getElementById('msg-in').value.trim();
+        if(t && canalAtual) {
+            db.ref('mensagens/' + canalAtual).push({
+                uid: user.id,
+                nome: user.nome,
+                texto: t,
+                time: Date.now()
             });
-        });
+            document.getElementById('msg-in').value = '';
+        }
     }
 
-    function mudarCorGlobal(c) { document.documentElement.style.setProperty('--cor-primaria', c); }
+    function fecharChat() {
+        document.getElementById('chat-view').style.display = 'none';
+        db.ref('mensagens/' + canalAtual).off();
+    }
 
-    // START
-    window.onload = () => {
-        if(user.isAdmin) document.getElementById('nav-admin').style.display = 'block';
-        if(user.premium) {
-            document.getElementById('display-status').innerText = "🌟 Vapt Premium Ativo";
-            document.getElementById('controles-premium').style.display = 'block';
-        }
-        renderizarAmigos();
-    };
+    function gerarKey() {
+        const k = "PREM-" + Math.floor(Math.random()*9999);
+        document.getElementById('res-key').innerText = k;
+    }
+
+    window.onload = listarAmigos;
 </script>
 </body>
 </html>
